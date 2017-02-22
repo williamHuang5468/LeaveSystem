@@ -4,8 +4,8 @@ import java.util.Date;
 
 public class LeaveModel {
 	String name;
-	Date timeFrom;
-	Date timeEnd;
+	Date dateFrom;
+	Date dateEnd;
 	
 	public LeaveModel(String name){
 		this.name = name;
@@ -13,15 +13,19 @@ public class LeaveModel {
 	
 	public LeaveModel(String name, Date timeFrom, Date timeEnd){
 		this.name = name;
-		this.timeFrom = timeFrom;
-		this.timeEnd = timeEnd;
+		this.dateFrom = timeFrom;
+		this.dateEnd = timeEnd;
 	}
 	
-	/*
-	public void printOut(){
-		System.out.println(name);
-		System.out.println(timeFrom);
-		System.out.println(timeEnd);
+	public String getName(){
+		return name;
 	}
-	*/
+	
+	public String getDateEnd(){
+		return dateEnd.toString();
+	}
+	
+	public String getDateFrom(){
+		return dateFrom.toString(); 
+	}
 }

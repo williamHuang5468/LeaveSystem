@@ -8,6 +8,11 @@
 
 // Apply the java-library plugin to add support for Java Library
 apply plugin: 'java'
+apply plugin: 'eclipse'
+
+sourceCompatibility = 1.8
+compileJava.options.encoding = 'UTF-8'
+compileTestJava.options.encoding = 'UTF-8'
 
 // In this section you declare where to find the dependencies of your project
 
@@ -29,4 +34,25 @@ repositories {
 dependencies {
     // Use JUnit test framework
     testImplementation 'junit:junit:4.12'
+}
+
+eclipse {
+    jdt {
+	sourceCompatibility = 1.8
+	targetCompatibility = 1.8
+	
+		file {
+	    	File dir = file('.settings')
+	    	dir.mkdirs()
+	    
+        	File file = file('.settings/org.eclipse.core.resources.prefs')
+	    	file.write('eclipse.preferences.version=1\n')
+	    	file.append('encoding/<project>=UTF-8')
+		}
+    }
+}
+
+cleanEclipse << {
+    File file = file('.settings/org.eclipse.core.resources.prefs')
+    file.delete()
 }

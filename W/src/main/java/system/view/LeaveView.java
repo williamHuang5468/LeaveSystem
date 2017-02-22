@@ -8,7 +8,7 @@ public class LeaveView {
 		this.model = model;
 	}
 	
-	public static void print(){
+	public void print(){
 		System.out.println(model.getName());
 		System.out.println(model.getDateFrom());
 		System.out.println(model.getDateEnd());
