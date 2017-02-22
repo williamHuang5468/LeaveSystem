@@ -1,10 +1,7 @@
-package main.java.system.controller;
-
-import main.java.system.model.LeaveModel;
+package system;
 
 public class TakeLeave {
 	public static void main(String[] args) {
-		LeaveModel leave = new LeaveModel("william");
 		//System.out.println(args[0]);
 		// add
 		String command = args[0];
