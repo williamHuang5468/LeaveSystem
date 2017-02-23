@@ -1,6 +1,7 @@
 package system.view;
 
 import system.model.LeaveModel;
+import utility.Utility;
 
 public class LeaveView {
 	LeaveModel model;
@@ -9,8 +10,8 @@ public class LeaveView {
 	}
 	
 	public void print(){
-		System.out.println(model.getName());
-		System.out.println(model.getDateFrom());
-		System.out.println(model.getDateEnd());
+		Utility.print(model.getName());
+		Utility.print(model.getDateEndString());
+		Utility.print(model.getDateFromString());
 	}
 }

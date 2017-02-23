@@ -36,6 +36,14 @@ public class LeaveModel {
 		return dateFrom; 
 	}
 	
+	public String getDateEndString(){
+		return dateEnd.toString();
+	}
+	
+	public String getDateFromString(){
+		return dateFrom.toString(); 
+	}
+	
 	public void print(){
 		System.out.println("---Model---");
 		System.out.println(getName());
