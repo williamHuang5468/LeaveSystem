@@ -1,36 +1,25 @@
 package system;
 
+import java.text.ParseException;
+
 import system.model.LeaveModel;
 
 public class TakeLeave {
-	public static void main(String[] args) {
-		// System.out.println(args[0]);
+	public static void main(String[] args) throws ParseException {
 		// add
 		String command = args[0];
 		MongoDB mongo = new MongoDB();
-		print(args[1]);
-		print(args[2]);
-		print(args[3]);
 		if (command.equals("add")) {
-			try{
-				LeaveModel model = new LeaveModel(args[1], args[2], args[3]);
-				print("---print---");
-				model.print();
-				mongo.add(model);
-				mongo.listAll();
-			}catch (Exception e) {
-				System.err.println(e.getClass().getName() + ": " + e.getMessage());
-			}
-		} else if (command == "list") {
-			print(command);
-		} else if (command == "listall") {
-			print(command);
+			LeaveModel model = new LeaveModel(args[1], args[2], args[3]);
+			mongo.add(model);
+		} else if (command.equals("list")) {
+			mongo.list(args[1]);
+		} else if (command.equals("listall")) {
+			mongo.listAll();
+		} else if (command.equals("delete")) {
+			mongo.delete(args[1]);
+			mongo.listAll();
 		}
-		// list <name>
-		// listall
-		/*
-		 * for (String s: args) { print(s); }
-		 */
 	}
 
 	public static void print(String input) {

@@ -37,8 +37,10 @@ public class LeaveModel {
 	}
 	
 	public void print(){
+		System.out.println("---Model---");
 		System.out.println(getName());
 		System.out.println(getDateEnd());
 		System.out.println(getDateFrom());
+		System.out.println("---End---");
 	}
 }
