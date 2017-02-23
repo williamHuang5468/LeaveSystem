@@ -75,7 +75,9 @@ public class MongoDB {
 			searchQuery.put("_id", new ObjectId(id));
 
 			BasicDBObject updateDocument = new BasicDBObject().append(
-					"dateFrom", dateFrom).append("dateEnd", dateEnd);
+					"$set",
+					new BasicDBObject().append("dateFrom", dateFrom).append(
+							"dateEnd", dateEnd));
 			leaveTable.update(searchQuery, updateDocument);
 			System.out.println("update success");
 
