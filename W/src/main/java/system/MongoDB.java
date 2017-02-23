@@ -1,6 +1,6 @@
 package system;
 
-import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 import org.bson.types.ObjectId;
@@ -34,39 +34,27 @@ public class MongoDB {
 		}
 	}
 
-	public void listAll() {
+	public List<DBObject> listAll() {
 		try {
 			DBCursor cursor = leaveTable.find();
 			List<DBObject> results = cursor.toArray();
-			for (DBObject item : results) {
-				System.out.println(item.get("_id").toString());
-				System.out.println((String) item.get("name"));
-				SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-				System.out.println(item.get("dateFrom").toString());
-				System.out.println(item.get("dateEnd").toString());
-			}
-			System.out.println("List End");
+			return results;
 		} catch (Exception e) {
 			System.err.println(e.getClass().getName() + ": " + e.getMessage());
 		}
+		return null;
 	}
 
-	public void list(String name) {
+	public List<DBObject> list(String name) {
 		try {
 			DBObject doc = new BasicDBObject("name", name);
 			DBCursor cursor = leaveTable.find(doc);
 			List<DBObject> results = cursor.toArray();
-			for (DBObject item : results) {
-				System.out.println(item.get("_id").toString());
-				System.out.println((String) item.get("name"));
-				SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-				System.out.println(item.get("dateFrom").toString());
-				System.out.println(item.get("dateEnd").toString());
-			}
-			System.out.println("List End");
+			return results;
 		} catch (Exception e) {
 			System.err.println(e.getClass().getName() + ": " + e.getMessage());
 		}
+		return null;
 	}
 
 	public void delete(String leaveID) {
@@ -81,9 +69,19 @@ public class MongoDB {
 		}
 	}
 
-	// TODO
-	public void edit() {
+	public void update(String id, Date dateFrom, Date dateEnd) {
+		try {
+			BasicDBObject searchQuery = new BasicDBObject();
+			searchQuery.put("_id", new ObjectId(id));
 
+			BasicDBObject updateDocument = new BasicDBObject().append(
+					"dateFrom", dateFrom).append("dateEnd", dateEnd);
+			leaveTable.update(searchQuery, updateDocument);
+			System.out.println("update success");
+
+		} catch (Exception e) {
+			System.err.println(e.getClass().getName() + ": " + e.getMessage());
+		}
 	}
 
 	public DBObject toDBObject(LeaveModel leave) {
