@@ -2,7 +2,7 @@ package system.view;
 
 import java.util.List;
 
-import com.mongodb.DBObject;
+import org.bson.Document;
 
 import system.model.LeaveModel;
 import utility.Utility;
@@ -16,14 +16,17 @@ public class LeaveView {
 	public LeaveView(){
 	}
 	
-	public void printList(List<DBObject> results){
-		for (DBObject item : results) {
+	// TODO
+	public void printList(List<Document> results){
+		for (Document item : results) {
 			System.out.println(item.get("_id").toString());
 			System.out.println(item.get("name"));
 			System.out.println(item.get("dateFrom").toString());
 			System.out.println(item.get("dateEnd").toString());
 		}
 	}
+	// TODO
+	// Another print
 
 	public void print(){
 		Utility.print(model.getName());

@@ -5,7 +5,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
-import com.mongodb.DBObject;
+import org.bson.Document;
 
 import system.MongoDB;
 import system.model.LeaveModel;
@@ -23,28 +23,34 @@ public class TakeLeaveController {
 		leaveView = new LeaveView();
 	}
 
+	// TODO 
 	public void execute() {
 		String command = this.commands[0].toLowerCase();
+		// add william 2016-10-10 2016-10-12  5
 		if (command.equals("add")) {
 			if (this.commands.length == 4) {
-				Date dateFrom = stringToDate(this.commands[2]);
-				Date dateEnd = stringToDate(this.commands[3]);
-				LeaveModel model = new LeaveModel(this.commands[1], dateFrom,
-						dateEnd);
-				mongo.add(model);
+				try {
+					Date dateFrom = stringToDate(this.commands[2]);
+					Date dateEnd = stringToDate(this.commands[3]);
+					LeaveModel model = new LeaveModel(this.commands[1],
+							dateFrom, dateEnd);
+					mongo.add(model);
+				} catch (ParseException e) {
+					System.err.println("You has wrong format, like `2016-03-10`");
+				}
 			} else {
 				Utility.print("Wrong args");
 			}
 		} else if (command.equals("list")) {
 			if (this.commands.length == 2) {
-				List<DBObject> results = mongo.list(this.commands[1]);
+				List<Document> results = mongo.list(this.commands[1]);
 				leaveView.printList(results);
 			} else {
 				Utility.print("Wrong args");
 			}
 		} else if (command.equals("listall")) {
 			if (this.commands.length == 1) {
-				List<DBObject> results = mongo.listAll();
+				List<Document> results = mongo.listAll();
 				leaveView.printList(results);
 			} else {
 				Utility.print("Wrong args");
@@ -58,10 +64,15 @@ public class TakeLeaveController {
 			}
 		} else if (command.equals("update")) {
 			if (this.commands.length == 4) {
-				Date dateFrom = stringToDate(this.commands[2]);
-				Date dateEnd = stringToDate(this.commands[3]);
-				mongo.update(this.commands[1], dateFrom, dateEnd);
-				mongo.listAll();
+				try {
+					Date dateFrom = stringToDate(this.commands[2]);
+					Date dateEnd = stringToDate(this.commands[3]);
+					mongo.update(this.commands[1], dateFrom, dateEnd);
+					mongo.listAll();
+				} catch (ParseException e) {
+					System.err.println(e.getClass().getName() + ": "
+							+ e.getMessage());
+				}
 			} else {
 				Utility.print("Wrong args");
 			}
@@ -70,13 +81,8 @@ public class TakeLeaveController {
 		}
 	}
 
-	public Date stringToDate(String dateString) {
+	public Date stringToDate(String dateString) throws ParseException {
 		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-		try {
-			return dateFormat.parse(dateString);
-		} catch (ParseException e) {
-			e.printStackTrace();
-		}
-		return null;
+		return dateFormat.parse(dateString);
 	}
 }

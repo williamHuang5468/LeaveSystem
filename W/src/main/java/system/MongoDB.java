@@ -1,93 +1,100 @@
 package system;
 
+import static com.mongodb.client.model.Filters.eq;
+
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.bson.Document;
 import org.bson.types.ObjectId;
 
 import system.model.LeaveModel;
 
 import com.mongodb.BasicDBObject;
-import com.mongodb.DB;
-import com.mongodb.DBCollection;
-import com.mongodb.DBCursor;
-import com.mongodb.DBObject;
 import com.mongodb.MongoClient;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
 
 public class MongoDB {
-	DBCollection leaveTable;
+	MongoCollection<Document> leaveTable;
+	MongoClient mongo;
 
 	public MongoDB() {
-		MongoClient mongo = new MongoClient("localhost", 27017);
-		DB db = mongo.getDB("takeleave");
+		connect();
+	}
+
+	public void connect() {
+		mongo = new MongoClient("localhost", 27017);
+		MongoDatabase db = mongo.getDatabase("takeleave");
 		leaveTable = db.getCollection("leave");
 	}
 
-	public void add(LeaveModel model) {
+	public boolean add(LeaveModel model) {
 		try {
-			DBObject doc = toDBObject(model);
-			leaveTable.insert(doc);
-			System.out.println("Insert success");
-
+			connect();
+			Document doc = toDocument(model);
+			leaveTable.insertOne(doc);
 		} catch (Exception e) {
-			System.err.println(e.getClass().getName() + ": " + e.getMessage());
+			return false;
+		} finally {
+			mongo.close();
 		}
+		return true;
 	}
 
-	public List<DBObject> listAll() {
-		try {
-			DBCursor cursor = leaveTable.find();
-			List<DBObject> results = cursor.toArray();
-			return results;
-		} catch (Exception e) {
-			System.err.println(e.getClass().getName() + ": " + e.getMessage());
+	public List<Document> listAll() {
+		connect();
+		List<Document> result = new ArrayList<Document>();
+		for (Document doc : leaveTable.find()) {
+			result.add(doc);
 		}
-		return null;
+		mongo.close();
+
+		return result;
 	}
 
-	public List<DBObject> list(String name) {
-		try {
-			DBObject doc = new BasicDBObject("name", name);
-			DBCursor cursor = leaveTable.find(doc);
-			List<DBObject> results = cursor.toArray();
-			return results;
-		} catch (Exception e) {
-			System.err.println(e.getClass().getName() + ": " + e.getMessage());
+	public List<Document> list(String name) {
+		connect();
+		List<Document> results = new ArrayList<Document>();
+		for (Document document : leaveTable.find(eq("name", name))) {
+			results.add(document);
 		}
-		return null;
+		mongo.close();
+		return results;
 	}
 
+	// TODO, return True or false
 	public void delete(String leaveID) {
+		connect();
 		try {
-			BasicDBObject document = new BasicDBObject();
-			document.put("_id", new ObjectId(leaveID));
-			leaveTable.remove(document);
-			System.out.println("Delete success");
-
+			leaveTable.deleteOne(eq("_id", new ObjectId(leaveID)));
 		} catch (Exception e) {
 			System.err.println(e.getClass().getName() + ": " + e.getMessage());
+		} finally {
+			mongo.close();
 		}
 	}
 
+	// TODO, Return ture
 	public void update(String id, Date dateFrom, Date dateEnd) {
+		connect();
 		try {
-			BasicDBObject searchQuery = new BasicDBObject();
-			searchQuery.put("_id", new ObjectId(id));
-
-			BasicDBObject updateDocument = new BasicDBObject().append(
+			Document updateDocument = new Document().append(
 					"$set",
 					new BasicDBObject().append("dateFrom", dateFrom).append(
 							"dateEnd", dateEnd));
-			leaveTable.update(searchQuery, updateDocument);
+			leaveTable.updateOne(eq("_id", new ObjectId(id)), updateDocument);
 			System.out.println("update success");
-
 		} catch (Exception e) {
 			System.err.println(e.getClass().getName() + ": " + e.getMessage());
+		} finally {
+			mongo.close();
 		}
 	}
 
-	public DBObject toDBObject(LeaveModel leave) {
-		return new BasicDBObject("name", leave.getName()).append("dateFrom",
+	public Document toDocument(LeaveModel leave) {
+		return new Document("name", leave.getName()).append("dateFrom",
 				leave.getDateFrom()).append("dateEnd", leave.getDateEnd());
 	}
 }

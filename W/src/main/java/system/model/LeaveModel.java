@@ -2,11 +2,17 @@ package system.model;
 
 import java.util.Date;
 
+import org.bson.types.ObjectId;
+
 public class LeaveModel {
 	String name;
 	Date dateFrom;
 	Date dateEnd;
 	
+	// TODO Gernerate ObjectId(), add
+	public LeaveModel(ObjectId id, String name, Date dateFrom, Date dateEnd){
+		
+	}
 	public LeaveModel(String name, Date dateFrom, Date dateEnd){
 		this.name = name;
 		this.dateFrom = dateFrom;
