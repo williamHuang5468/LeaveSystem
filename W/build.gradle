@@ -9,6 +9,9 @@
 // Apply the java-library plugin to add support for Java Library
 apply plugin: 'java'
 apply plugin: 'eclipse'
+apply plugin: 'application'
+
+mainClassName = 'system.TakeLeave'
 
 sourceCompatibility = 1.8
 compileJava.options.encoding = 'UTF-8'
@@ -34,6 +37,11 @@ repositories {
 dependencies {
     // Use JUnit test framework
     testImplementation 'junit:junit:4.12'
+    compile 'org.mongodb:mongodb-driver:3.4.2' 
+}
+
+repositories {
+    mavenCentral()
 }
 
 eclipse {

@@ -45,3 +45,13 @@ Controller
              person.update(...);
              view.modelUpdated();
 ```
+
+
+## Result
+
+MVC
+
+Main call to Controller:
+
+- Controller own `Model` and `View`
+- View own `Model`

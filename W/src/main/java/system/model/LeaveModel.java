@@ -1,5 +1,7 @@
 package system.model;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class LeaveModel {
@@ -7,25 +9,36 @@ public class LeaveModel {
 	Date dateFrom;
 	Date dateEnd;
 	
-	public LeaveModel(String name){
+	public LeaveModel(String name, String dateFrom, String dateEnd) throws ParseException{
 		this.name = name;
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+		Date from = dateFormat.parse(dateFrom);
+		Date end = dateFormat.parse(dateEnd);
+		this.dateFrom = from;
+		this.dateEnd = end;
 	}
 	
-	public LeaveModel(String name, Date timeFrom, Date timeEnd){
+	public LeaveModel(String name, Date dateFrom, Date dateEnd){
 		this.name = name;
-		this.dateFrom = timeFrom;
-		this.dateEnd = timeEnd;
+		this.dateFrom = dateFrom;
+		this.dateEnd = dateEnd;
 	}
 	
 	public String getName(){
 		return name;
 	}
 	
-	public String getDateEnd(){
-		return dateEnd.toString();
+	public Date getDateEnd(){
+		return dateEnd;
 	}
 	
-	public String getDateFrom(){
-		return dateFrom.toString(); 
+	public Date getDateFrom(){
+		return dateFrom; 
+	}
+	
+	public void print(){
+		System.out.println(getName());
+		System.out.println(getDateEnd());
+		System.out.println(getDateFrom());
 	}
 }
