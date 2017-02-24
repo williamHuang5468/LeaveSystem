@@ -23,10 +23,6 @@ public class MongoDB {
 	MongoCollection<Document> leaveTable;
 	MongoClient mongo;
 
-	public MongoDB() {
-		connect();
-	}
-
 	public void connect() {
 		mongo = new MongoClient("localhost", 27017);
 		MongoDatabase db = mongo.getDatabase("takeleave");

@@ -6,15 +6,9 @@ import java.util.Date;
 
 import org.bson.types.ObjectId;
 
-import system.MongoDB;
 import system.model.LeaveModel;
 
 public class CommandFactory {
-	MongoDB mongo;
-
-	public CommandFactory() {
-		this.mongo = new MongoDB();
-	}
 
 	public Command createCommand(String[] args) {
 		String commandString = args[0].toLowerCase();
@@ -22,11 +16,11 @@ public class CommandFactory {
 		if (commandString.equals("add") && args.length == 4) {
 			command = createAddCommand(args, command);
 		} else if (commandString.equals("list") && args.length == 2) {
-			command = new ListCommand(mongo, args[1]);
+			command = new ListCommand(args[1]);
 		} else if (commandString.equals("listall") && args.length == 1) {
-			command = new ListAllCommand(mongo);
+			command = new ListAllCommand();
 		} else if (commandString.equals("delete") && args.length == 2) {
-			command = new DeleteCommand(mongo, args[1]);
+			command = new DeleteCommand(args[1]);
 		} else if (commandString.equals("update") && args.length == 4) {
 			command = createUpdateCommand(args);
 		} else if (commandString.equals("querybyname") && args.length == 3) {
@@ -52,7 +46,7 @@ public class CommandFactory {
 			Date dateEnd = stringToDate(args[3]);
 			LeaveModel model = new LeaveModel(new ObjectId(args[1]), dateFrom,
 					dateEnd);
-			return new UpdateCommand(mongo, model);
+			return new UpdateCommand(model);
 		} catch (ParseException e) {
 			System.err.println("You has wrong format, like `2016-03-10`");
 		}
@@ -64,7 +58,7 @@ public class CommandFactory {
 			Date dateFrom = stringToDate(args[2]);
 			Date dateEnd = stringToDate(args[3]);
 			LeaveModel model = new LeaveModel(args[1], dateFrom, dateEnd);
-			return new AddCommand(mongo, model);
+			return new AddCommand(model);
 		} catch (ParseException e) {
 			System.err.println("You has wrong format, like `2016-03-10`");
 		}
@@ -97,7 +91,7 @@ public class CommandFactory {
 			String[] conditions = values[1].split(",");
 			Date dateFrom = stringToDate(conditions[0]);
 			Date dateEnd = stringToDate(conditions[1]);
-			return new QueryByNameBetweenCommand(mongo, name, dateFrom, dateEnd);
+			return new QueryByNameBetweenCommand(name, dateFrom, dateEnd);
 		} else {
 			return new NullCommand();
 		}
@@ -112,7 +106,7 @@ public class CommandFactory {
 		if (isRightField) {
 			String condition = values[1];
 			Date fieldValue = stringToDate(condition);
-			return new QueryByNameGreaterCommand(mongo, name, field, fieldValue);
+			return new QueryByNameGreaterCommand(name, field, fieldValue);
 		} else {
 			return new NullCommand();
 		}
@@ -127,7 +121,7 @@ public class CommandFactory {
 		if (isRightField) {
 			String condition = values[1];
 			Date fieldValue = stringToDate(condition);
-			return new QueryByNameLessCommand(mongo, name, field, fieldValue);
+			return new QueryByNameLessCommand(name, field, fieldValue);
 		} else {
 			return new NullCommand();
 		}

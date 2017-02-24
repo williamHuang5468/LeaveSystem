@@ -1,12 +1,10 @@
 package system.controller.command;
 
-import system.MongoDB;
 
 public class DeleteCommand extends Command {
 	private String leaveId;
 	
-	public DeleteCommand(MongoDB mongo, String id) {
-		super(mongo);
+	public DeleteCommand(String id) {
 		leaveId = id;
 	}
 

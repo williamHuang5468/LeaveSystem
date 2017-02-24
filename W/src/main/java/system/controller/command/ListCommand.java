@@ -1,12 +1,10 @@
 package system.controller.command;
 
-import system.MongoDB;
 
 public class ListCommand extends Command {
 	private String name;
 
-	public ListCommand(MongoDB mongo, String name) {
-		super(mongo);
+	public ListCommand(String name) {
 		this.name = name;
 	}
 
