@@ -97,11 +97,11 @@ public class MongoDB {
 		return true;
 	}
 	
-	public List<Document> queryByNameLess(String name, Date dateFrom) {
+	public List<Document> queryByNameLess(String name, String field, Date dateValue) {
 		connect();
 		List<Document> result = new ArrayList<Document>();
 		try {
-			Bson filter = and(eq("name", name), lt("dateFrom", dateFrom));
+			Bson filter = and(eq("name", name), lt(field, dateValue));
 			for (Document doc : leaveTable.find(filter)) {
 				result.add(doc);
 			}
@@ -113,11 +113,11 @@ public class MongoDB {
 		return result;
 	}
 	
-	public List<Document> queryByNameGreater(String name, Date dateFrom) {
+	public List<Document> queryByNameGreater(String name, String field, Date dateValue) {
 		connect();
 		List<Document> result = new ArrayList<Document>();
 		try {
-			Bson filter = and(eq("name", name), gt("dateFrom", dateFrom));
+			Bson filter = and(eq("name", name), gt(field, dateValue));
 			for (Document doc : leaveTable.find(filter)) {
 				result.add(doc);
 			}

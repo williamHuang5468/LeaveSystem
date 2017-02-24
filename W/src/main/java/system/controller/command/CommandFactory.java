@@ -1,7 +1,6 @@
 package system.controller.command;
 
 import java.text.ParseException;
-
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -39,28 +38,18 @@ public class CommandFactory {
 			try {
 				Date dateFrom = stringToDate(args[2]);
 				Date dateEnd = stringToDate(args[3]);
-				LeaveModel model = new LeaveModel(new ObjectId(args[1]), dateFrom, dateEnd);
-				command = new UpdateCommand(mongo, model);				
+				LeaveModel model = new LeaveModel(new ObjectId(args[1]),
+						dateFrom, dateEnd);
+				command = new UpdateCommand(mongo, model);
 			} catch (ParseException e) {
 				System.err.println("You has wrong format, like `2016-03-10`");
 			}
-		} else if (commandString.equals("querybyname") && args.length == 3){
+		} else if (commandString.equals("querybyname") && args.length == 3) {
 			try {
-				String str = "2016-01-01";
-				String str2 = "2016-02-12";
-				String name = "john";
-				String condition = ">"; // < , >
-				Date dateFrom = stringToDate(str);
-				Date dateEnd = stringToDate(str2);
-				//if(){
-					command = new QueryByNameLessCommand(mongo, name, dateFrom);
-				/*else if(){
-					command = new QueryByNameGreaterCommand(mongo, name, dateFrom);
-				} else if(){
-					command = new QueryByNameBetweenCommand(mongo, name, dateFrom, dateEnd);
-				} else{
-					command = new NullCommand();
-				}*/
+				// String arg = "daterange=2016-01-01,2016-05-05";
+				String condition = args[2];
+				String name = args[1];
+				command = conditionOperation(condition, name);
 			} catch (ParseException e) {
 				System.err.println("You has wrong format, like `2016-03-10`");
 			}
@@ -68,6 +57,68 @@ public class CommandFactory {
 			command = new NullCommand();
 		}
 		return command;
+	}
+
+	private Command conditionOperation(String condition, String name)
+			throws ParseException {
+		Command command;
+		boolean equal = condition.contains("=");
+		boolean greater = condition.contains(">");
+		boolean less = condition.contains("<");
+		if (equal) {
+			command = queryByNameEqualOperation(condition, name);
+		} else if (greater) {
+			command = queryByNameGreaterOperation(condition, name);
+		} else if (less) {
+			command = queryByNameLessOperation(condition, name);
+		} else {
+			command = new NullCommand();
+		}
+		return command;
+	}
+
+	private Command queryByNameEqualOperation(String arg, String name)
+			throws ParseException {
+		String[] values = arg.split("=");
+		boolean isRightField = values[0].equals("daterange");
+		if (isRightField) {
+			String[] conditions = values[1].split(",");
+			Date dateFrom = stringToDate(conditions[0]);
+			Date dateEnd = stringToDate(conditions[1]);
+			return new QueryByNameBetweenCommand(mongo, name, dateFrom, dateEnd);
+		} else {
+			return new NullCommand();
+		}
+	}
+
+	private Command queryByNameGreaterOperation(String arg, String name)
+			throws ParseException {
+		String[] values = arg.split(">");
+		String field = values[0];
+		boolean isRightField = field.equals("dateFrom")
+				|| field.equals("dateEnd");
+		if (isRightField) {
+			String condition = values[1];
+			Date fieldValue = stringToDate(condition);
+			return new QueryByNameGreaterCommand(mongo, name, field, fieldValue);
+		} else {
+			return new NullCommand();
+		}
+	}
+
+	private Command queryByNameLessOperation(String arg, String name)
+			throws ParseException {
+		String[] values = arg.split("<");
+		String field = values[0];
+		boolean isRightField = field.equals("dateFrom")
+				|| field.equals("dateEnd");
+		if (isRightField) {
+			String condition = values[1];
+			Date fieldValue = stringToDate(condition);
+			return new QueryByNameLessCommand(mongo, name, field, fieldValue);
+		} else {
+			return new NullCommand();
+		}
 	}
 
 	public Date stringToDate(String dateString) throws ParseException {
