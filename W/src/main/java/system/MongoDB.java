@@ -36,6 +36,7 @@ public class MongoDB {
 			Document doc = toDocument(model);
 			leaveTable.insertOne(doc);
 		} catch (Exception e) {
+			System.err.println(e.getClass().getName() + ": " + e.getMessage());
 			return false;
 		} finally {
 			mongo.close();
@@ -57,27 +58,27 @@ public class MongoDB {
 	public List<Document> list(String name) {
 		connect();
 		List<Document> results = new ArrayList<Document>();
-		for (Document document : leaveTable.find(eq("name", name))) {
-			results.add(document);
+		for (Document doc : leaveTable.find(eq("name", name))) {
+			results.add(doc);
 		}
 		mongo.close();
 		return results;
 	}
 
-	// TODO, return True or false
-	public void delete(String leaveID) {
+	public boolean delete(String leaveID) {
 		connect();
 		try {
 			leaveTable.deleteOne(eq("_id", new ObjectId(leaveID)));
 		} catch (Exception e) {
 			System.err.println(e.getClass().getName() + ": " + e.getMessage());
+			return false;
 		} finally {
 			mongo.close();
 		}
+		return true;
 	}
 
-	// TODO, Return ture
-	public void update(String id, Date dateFrom, Date dateEnd) {
+	public boolean update(String id, Date dateFrom, Date dateEnd) {
 		connect();
 		try {
 			Document updateDocument = new Document().append(
@@ -85,12 +86,13 @@ public class MongoDB {
 					new BasicDBObject().append("dateFrom", dateFrom).append(
 							"dateEnd", dateEnd));
 			leaveTable.updateOne(eq("_id", new ObjectId(id)), updateDocument);
-			System.out.println("update success");
 		} catch (Exception e) {
 			System.err.println(e.getClass().getName() + ": " + e.getMessage());
+			return false;
 		} finally {
 			mongo.close();
 		}
+		return true;
 	}
 
 	public Document toDocument(LeaveModel leave) {

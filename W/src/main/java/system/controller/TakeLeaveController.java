@@ -10,7 +10,6 @@ import org.bson.Document;
 import system.MongoDB;
 import system.model.LeaveModel;
 import system.view.LeaveView;
-import utility.Utility;
 
 public class TakeLeaveController {
 	String[] commands;
@@ -23,10 +22,9 @@ public class TakeLeaveController {
 		leaveView = new LeaveView();
 	}
 
-	// TODO 
+	// TODO Command pattern
 	public void execute() {
 		String command = this.commands[0].toLowerCase();
-		// add william 2016-10-10 2016-10-12  5
 		if (command.equals("add")) {
 			if (this.commands.length == 4) {
 				try {
@@ -39,28 +37,28 @@ public class TakeLeaveController {
 					System.err.println("You has wrong format, like `2016-03-10`");
 				}
 			} else {
-				Utility.print("Wrong args");
+				System.out.println("Wrong args");
 			}
 		} else if (command.equals("list")) {
 			if (this.commands.length == 2) {
 				List<Document> results = mongo.list(this.commands[1]);
 				leaveView.printList(results);
 			} else {
-				Utility.print("Wrong args");
+				System.out.println("Wrong args");
 			}
 		} else if (command.equals("listall")) {
 			if (this.commands.length == 1) {
 				List<Document> results = mongo.listAll();
-				leaveView.printList(results);
+				leaveView.printListAll(results);
 			} else {
-				Utility.print("Wrong args");
+				System.out.println("Wrong args");
 			}
 		} else if (command.equals("delete")) {
 			if (this.commands.length == 2) {
 				mongo.delete(this.commands[1]);
 				mongo.listAll();
 			} else {
-				Utility.print("Wrong args");
+				System.out.println("Wrong args");
 			}
 		} else if (command.equals("update")) {
 			if (this.commands.length == 4) {
@@ -74,10 +72,10 @@ public class TakeLeaveController {
 							+ e.getMessage());
 				}
 			} else {
-				Utility.print("Wrong args");
+				System.out.println("Wrong args");
 			}
 		} else {
-			Utility.print("Doesn't support this command");
+			System.out.println("Doesn't support this command");
 		}
 	}
 

@@ -5,15 +5,19 @@ import java.util.Date;
 import org.bson.types.ObjectId;
 
 public class LeaveModel {
+	ObjectId leaveId;
 	String name;
 	Date dateFrom;
 	Date dateEnd;
 	
-	// TODO Gernerate ObjectId(), add
 	public LeaveModel(ObjectId id, String name, Date dateFrom, Date dateEnd){
-		
+		leaveId = id;
+		this.name = name;
+		this.dateFrom = dateFrom;
+		this.dateEnd = dateEnd;
 	}
 	public LeaveModel(String name, Date dateFrom, Date dateEnd){
+		leaveId = new ObjectId();
 		this.name = name;
 		this.dateFrom = dateFrom;
 		this.dateEnd = dateEnd;
