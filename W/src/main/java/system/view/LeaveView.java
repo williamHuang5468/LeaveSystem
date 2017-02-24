@@ -24,6 +24,15 @@ public class LeaveView {
 			System.out.println(item.get("dateEnd").toString());
 		}
 	}
+	
+	public void printAll(List<Document> results){
+		for (Document item : results) {
+			System.out.println(item.get("_id").toString());
+			System.out.println(item.get("name"));
+			System.out.println(item.get("dateFrom").toString());
+			System.out.println(item.get("dateEnd").toString());
+		}
+	}
 
 	public void printStatus(boolean status) {
 		System.out.println("status : " + status);

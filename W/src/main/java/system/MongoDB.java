@@ -1,11 +1,16 @@
 package system;
 
 import static com.mongodb.client.model.Filters.eq;
+import static com.mongodb.client.model.Filters.gt;
+import static com.mongodb.client.model.Filters.lt;
+import static com.mongodb.client.model.Filters.and;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.bson.Document;
+import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
 
 import system.model.LeaveModel;
@@ -91,7 +96,56 @@ public class MongoDB {
 		}
 		return true;
 	}
+	
+	public List<Document> queryByNameLess(String name, Date dateFrom) {
+		connect();
+		List<Document> result = new ArrayList<Document>();
+		try {
+			Bson filter = and(eq("name", name), lt("dateFrom", dateFrom));
+			for (Document doc : leaveTable.find(filter)) {
+				result.add(doc);
+			}
+		} catch (Exception e) {
+			System.err.println(e.getClass().getName() + ": " + e.getMessage());
+		} finally {
+			mongo.close();
+		}
+		return result;
+	}
+	
+	public List<Document> queryByNameGreater(String name, Date dateFrom) {
+		connect();
+		List<Document> result = new ArrayList<Document>();
+		try {
+			Bson filter = and(eq("name", name), gt("dateFrom", dateFrom));
+			for (Document doc : leaveTable.find(filter)) {
+				result.add(doc);
+			}
+		} catch (Exception e) {
+			System.err.println(e.getClass().getName() + ": " + e.getMessage());
+		} finally {
+			mongo.close();
+		}
+		return result;
+	}
 
+	public List<Document> queryByNameBetween(String name, Date dateFrom,
+			Date dateEnd) {
+		connect();
+		List<Document> result = new ArrayList<Document>();
+		Bson filter = and(eq("name", name), gt("dateFrom", dateFrom),lt("dateEnd", dateEnd));
+		try {
+			for (Document doc : leaveTable.find(filter)) {
+				result.add(doc);
+			}
+		} catch (Exception e) {
+			System.err.println(e.getClass().getName() + ": " + e.getMessage());
+		} finally {
+			mongo.close();
+		}
+		return result;
+	}
+	
 	public Document toDocument(LeaveModel leave) {
 		return new Document("name", leave.getName()).append("dateFrom",
 				leave.getDateFrom()).append("dateEnd", leave.getDateEnd());

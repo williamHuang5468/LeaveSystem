@@ -85,3 +85,9 @@ read
 delete collection
 
     db.leave.drop()
+
+## [Update Docuement](http://mongodb.github.io/mongo-java-driver/3.4/driver/getting-started/quick-start/)
+
+use the newest API.
+
+like `MongoClient` and `MongoCollection`.

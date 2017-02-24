@@ -44,6 +44,26 @@ public class CommandFactory {
 			} catch (ParseException e) {
 				System.err.println("You has wrong format, like `2016-03-10`");
 			}
+		} else if (commandString.equals("querybyname") && args.length == 3){
+			try {
+				String str = "2016-01-01";
+				String str2 = "2016-02-12";
+				String name = "john";
+				String condition = ">"; // < , >
+				Date dateFrom = stringToDate(str);
+				Date dateEnd = stringToDate(str2);
+				//if(){
+					command = new QueryByNameLessCommand(mongo, name, dateFrom);
+				/*else if(){
+					command = new QueryByNameGreaterCommand(mongo, name, dateFrom);
+				} else if(){
+					command = new QueryByNameBetweenCommand(mongo, name, dateFrom, dateEnd);
+				} else{
+					command = new NullCommand();
+				}*/
+			} catch (ParseException e) {
+				System.err.println("You has wrong format, like `2016-03-10`");
+			}
 		} else {
 			command = new NullCommand();
 		}
