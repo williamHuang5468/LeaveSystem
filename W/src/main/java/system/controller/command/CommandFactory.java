@@ -9,27 +9,7 @@ import org.bson.types.ObjectId;
 import system.model.LeaveModel;
 
 public class CommandFactory {
-
-	public Command createCommand(String[] args) {
-		String commandString = args[0].toLowerCase();
-		Command command = new NullCommand();
-		if (commandString.equals("add") && args.length == 4) {
-			command = createAddCommand(args, command);
-		} else if (commandString.equals("list") && args.length == 2) {
-			command = new ListCommand(args[1]);
-		} else if (commandString.equals("listall") && args.length == 1) {
-			command = new ListAllCommand();
-		} else if (commandString.equals("delete") && args.length == 2) {
-			command = new DeleteCommand(args[1]);
-		} else if (commandString.equals("update") && args.length == 4) {
-			command = createUpdateCommand(args);
-		} else if (commandString.equals("querybyname") && args.length == 3) {
-			command = queryCommandOperation(args);
-		}
-		return command;
-	}
-
-	private Command queryCommandOperation(String[] args) {
+	public Command queryCommandOperation(String[] args) {
 		try {
 			String condition = args[2];
 			String name = args[1];
@@ -37,10 +17,10 @@ public class CommandFactory {
 		} catch (ParseException e) {
 			System.err.println("You has wrong format, like `2016-03-10`");
 		}
-		return new NullCommand();
+		return createNullCommand();
 	}
 
-	private Command createUpdateCommand(String[] args) {
+	public Command createUpdateCommand(String[] args) {
 		try {
 			Date dateFrom = stringToDate(args[2]);
 			Date dateEnd = stringToDate(args[3]);
@@ -50,10 +30,10 @@ public class CommandFactory {
 		} catch (ParseException e) {
 			System.err.println("You has wrong format, like `2016-03-10`");
 		}
-		return new NullCommand();
+		return createNullCommand();
 	}
 
-	private Command createAddCommand(String[] args, Command command) {
+	public Command createAddCommand(String[] args, Command command) {
 		try {
 			Date dateFrom = stringToDate(args[2]);
 			Date dateEnd = stringToDate(args[3]);
@@ -62,12 +42,12 @@ public class CommandFactory {
 		} catch (ParseException e) {
 			System.err.println("You has wrong format, like `2016-03-10`");
 		}
-		return new NullCommand();
+		return createNullCommand();
 	}
 
-	private Command conditionOperation(String condition, String name)
+	public Command conditionOperation(String condition, String name)
 			throws ParseException {
-		Command command = new NullCommand();
+		Command command = createNullCommand();
 		boolean equal = condition.contains("=");
 		boolean greater = condition.contains(">");
 		boolean less = condition.contains("<");
@@ -91,7 +71,7 @@ public class CommandFactory {
 			Date dateEnd = stringToDate(conditions[1]);
 			return new QueryByNameBetweenCommand(name, dateFrom, dateEnd);
 		} else {
-			return new NullCommand();
+			return createNullCommand();
 		}
 	}
 
@@ -106,7 +86,7 @@ public class CommandFactory {
 			Date fieldValue = stringToDate(condition);
 			return new QueryByNameGreaterCommand(name, field, fieldValue);
 		} else {
-			return new NullCommand();
+			return createNullCommand();
 		}
 	}
 
@@ -121,12 +101,28 @@ public class CommandFactory {
 			Date fieldValue = stringToDate(condition);
 			return new QueryByNameLessCommand(name, field, fieldValue);
 		} else {
-			return new NullCommand();
+			return createNullCommand();
 		}
 	}
 
 	public Date stringToDate(String dateString) throws ParseException {
 		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 		return dateFormat.parse(dateString);
+	}
+
+	public Command createNullCommand() {
+		return new NullCommand();
+	}
+
+	public Command createListCommand(String name) {
+		return new ListCommand(name);
+	}
+
+	public Command createListAllCommand() {
+		return new ListAllCommand();
+	}
+
+	public Command createDeleteCommand(String leaveId) {
+		return new DeleteCommand(leaveId);
 	}
 }
