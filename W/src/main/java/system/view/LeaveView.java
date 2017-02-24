@@ -24,4 +24,8 @@ public class LeaveView {
 			System.out.println(item.get("dateEnd").toString());
 		}
 	}
+
+	public void printStatus(boolean status) {
+		System.out.println("status : " + status);
+	}
 }

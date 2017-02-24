@@ -3,7 +3,6 @@ package system;
 import static com.mongodb.client.model.Filters.eq;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import org.bson.Document;
@@ -11,7 +10,6 @@ import org.bson.types.ObjectId;
 
 import system.model.LeaveModel;
 
-import com.mongodb.BasicDBObject;
 import com.mongodb.MongoClient;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
@@ -78,14 +76,13 @@ public class MongoDB {
 		return true;
 	}
 
-	public boolean update(String id, Date dateFrom, Date dateEnd) {
+	public boolean update(LeaveModel model) {
 		connect();
 		try {
-			Document updateDocument = new Document().append(
-					"$set",
-					new BasicDBObject().append("dateFrom", dateFrom).append(
-							"dateEnd", dateEnd));
-			leaveTable.updateOne(eq("_id", new ObjectId(id)), updateDocument);
+			Document updateDocument = new Document().append("$set",
+					new Document().append("dateFrom", model.getDateFrom())
+							.append("dateEnd", model.getDateEnd()));
+			leaveTable.updateOne(eq("_id", model.getId()), updateDocument);
 		} catch (Exception e) {
 			System.err.println(e.getClass().getName() + ": " + e.getMessage());
 			return false;

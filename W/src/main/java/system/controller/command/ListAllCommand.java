@@ -1,15 +1,14 @@
 package system.controller.command;
 
+import system.MongoDB;
 
-
-public class ListAllCommand implements Command{
-
-	public ListAllCommand(){
-		
+public class ListAllCommand extends Command {
+	public ListAllCommand(MongoDB mongo) {
+		super(mongo);
 	}
-	
-	@Override
-	public void execute() {
 
-	}	
+	public void execute() {
+		super.results = mongo.listAll();
+		super.view.printListAll(super.results);
+	}
 }
