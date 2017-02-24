@@ -67,7 +67,7 @@ public class CommandFactory {
 
 	private Command conditionOperation(String condition, String name)
 			throws ParseException {
-		Command command;
+		Command command = new NullCommand();
 		boolean equal = condition.contains("=");
 		boolean greater = condition.contains(">");
 		boolean less = condition.contains("<");
@@ -77,8 +77,6 @@ public class CommandFactory {
 			command = queryByNameGreaterOperation(condition, name);
 		} else if (less) {
 			command = queryByNameLessOperation(condition, name);
-		} else {
-			command = new NullCommand();
 		}
 		return command;
 	}

@@ -1,9 +1,9 @@
 package system;
 
+import static com.mongodb.client.model.Filters.and;
 import static com.mongodb.client.model.Filters.eq;
 import static com.mongodb.client.model.Filters.gt;
 import static com.mongodb.client.model.Filters.lt;
-import static com.mongodb.client.model.Filters.and;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -44,29 +44,17 @@ public class MongoDB {
 	}
 
 	public List<Document> listAll() {
-		connect();
-		List<Document> result = new ArrayList<Document>();
-		for (Document doc : leaveTable.find()) {
-			result.add(doc);
-		}
-		mongo.close();
-
-		return result;
+		return queryTemplate();
 	}
 
 	public List<Document> list(String name) {
-		connect();
-		List<Document> results = new ArrayList<Document>();
-		for (Document doc : leaveTable.find(eq("name", name))) {
-			results.add(doc);
-		}
-		mongo.close();
-		return results;
+		Bson query = eq("name", name);
+		return queryTemplate(query);
 	}
 
 	public boolean delete(String leaveID) {
-		connect();
 		try {
+			connect();
 			leaveTable.deleteOne(eq("_id", new ObjectId(leaveID)));
 		} catch (Exception e) {
 			System.err.println(e.getClass().getName() + ": " + e.getMessage());
@@ -78,8 +66,8 @@ public class MongoDB {
 	}
 
 	public boolean update(LeaveModel model) {
-		connect();
 		try {
+			connect();
 			Document updateDocument = new Document().append("$set",
 					new Document().append("dateFrom", model.getDateFrom())
 							.append("dateEnd", model.getDateEnd()));
@@ -92,57 +80,47 @@ public class MongoDB {
 		}
 		return true;
 	}
-	
-	public List<Document> queryByNameLess(String name, String field, Date dateValue) {
-		connect();
-		List<Document> result = new ArrayList<Document>();
-		try {
-			Bson filter = and(eq("name", name), lt(field, dateValue));
-			for (Document doc : leaveTable.find(filter)) {
-				result.add(doc);
-			}
-		} catch (Exception e) {
-			System.err.println(e.getClass().getName() + ": " + e.getMessage());
-		} finally {
-			mongo.close();
-		}
-		return result;
+
+	public List<Document> queryByNameLess(String name, String field,
+			Date dateValue) {
+		Bson query = and(eq("name", name), lt(field, dateValue));
+		return queryTemplate(query);
 	}
-	
-	public List<Document> queryByNameGreater(String name, String field, Date dateValue) {
-		connect();
-		List<Document> result = new ArrayList<Document>();
-		try {
-			Bson filter = and(eq("name", name), gt(field, dateValue));
-			for (Document doc : leaveTable.find(filter)) {
-				result.add(doc);
-			}
-		} catch (Exception e) {
-			System.err.println(e.getClass().getName() + ": " + e.getMessage());
-		} finally {
-			mongo.close();
-		}
-		return result;
+
+	public List<Document> queryByNameGreater(String name, String field,
+			Date dateValue) {
+		Bson query = and(eq("name", name), gt(field, dateValue));
+		return queryTemplate(query);
 	}
 
 	public List<Document> queryByNameBetween(String name, Date dateFrom,
 			Date dateEnd) {
+		Bson query = and(eq("name", name), gt("dateFrom", dateFrom),
+				lt("dateEnd", dateEnd));
+		return queryTemplate(query);
+	}
+
+	private List<Document> queryTemplate() {
 		connect();
 		List<Document> result = new ArrayList<Document>();
-		Bson filter = and(eq("name", name), gt("dateFrom", dateFrom),lt("dateEnd", dateEnd));
-		try {
-			for (Document doc : leaveTable.find(filter)) {
-				result.add(doc);
-			}
-		} catch (Exception e) {
-			System.err.println(e.getClass().getName() + ": " + e.getMessage());
-		} finally {
-			mongo.close();
+		for (Document doc : leaveTable.find()) {
+			result.add(doc);
 		}
+		mongo.close();
 		return result;
 	}
-	
-	public Document toDocument(LeaveModel leave) {
+
+	private List<Document> queryTemplate(Bson query) {
+		connect();
+		List<Document> result = new ArrayList<Document>();
+		for (Document doc : leaveTable.find(query)) {
+			result.add(doc);
+		}
+		mongo.close();
+		return result;
+	}
+
+	private Document toDocument(LeaveModel leave) {
 		return new Document("name", leave.getName()).append("dateFrom",
 				leave.getDateFrom()).append("dateEnd", leave.getDateEnd());
 	}
