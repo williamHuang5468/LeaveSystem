@@ -18,16 +18,9 @@ public class CommandFactory {
 
 	public Command createCommand(String[] args) {
 		String commandString = args[0].toLowerCase();
-		Command command = null;
+		Command command = new NullCommand();
 		if (commandString.equals("add") && args.length == 4) {
-			try {
-				Date dateFrom = stringToDate(args[2]);
-				Date dateEnd = stringToDate(args[3]);
-				LeaveModel model = new LeaveModel(args[1], dateFrom, dateEnd);
-				command = new AddCommand(mongo, model);
-			} catch (ParseException e) {
-				System.err.println("You has wrong format, like `2016-03-10`");
-			}
+			command = createAddCommand(args, command);
 		} else if (commandString.equals("list") && args.length == 2) {
 			command = new ListCommand(mongo, args[1]);
 		} else if (commandString.equals("listall") && args.length == 1) {
@@ -35,28 +28,47 @@ public class CommandFactory {
 		} else if (commandString.equals("delete") && args.length == 2) {
 			command = new DeleteCommand(mongo, args[1]);
 		} else if (commandString.equals("update") && args.length == 4) {
-			try {
-				Date dateFrom = stringToDate(args[2]);
-				Date dateEnd = stringToDate(args[3]);
-				LeaveModel model = new LeaveModel(new ObjectId(args[1]),
-						dateFrom, dateEnd);
-				command = new UpdateCommand(mongo, model);
-			} catch (ParseException e) {
-				System.err.println("You has wrong format, like `2016-03-10`");
-			}
+			command = createUpdateCommand(args);
 		} else if (commandString.equals("querybyname") && args.length == 3) {
-			try {
-				// String arg = "daterange=2016-01-01,2016-05-05";
-				String condition = args[2];
-				String name = args[1];
-				command = conditionOperation(condition, name);
-			} catch (ParseException e) {
-				System.err.println("You has wrong format, like `2016-03-10`");
-			}
-		} else {
-			command = new NullCommand();
+			command = queryCommandOperation(args);
 		}
 		return command;
+	}
+
+	private Command queryCommandOperation(String[] args) {
+		try {
+			String condition = args[2];
+			String name = args[1];
+			return conditionOperation(condition, name);
+		} catch (ParseException e) {
+			System.err.println("You has wrong format, like `2016-03-10`");
+		}
+		return new NullCommand();
+	}
+
+	private Command createUpdateCommand(String[] args) {
+		try {
+			Date dateFrom = stringToDate(args[2]);
+			Date dateEnd = stringToDate(args[3]);
+			LeaveModel model = new LeaveModel(new ObjectId(args[1]), dateFrom,
+					dateEnd);
+			return new UpdateCommand(mongo, model);
+		} catch (ParseException e) {
+			System.err.println("You has wrong format, like `2016-03-10`");
+		}
+		return new NullCommand();
+	}
+
+	private Command createAddCommand(String[] args, Command command) {
+		try {
+			Date dateFrom = stringToDate(args[2]);
+			Date dateEnd = stringToDate(args[3]);
+			LeaveModel model = new LeaveModel(args[1], dateFrom, dateEnd);
+			return new AddCommand(mongo, model);
+		} catch (ParseException e) {
+			System.err.println("You has wrong format, like `2016-03-10`");
+		}
+		return new NullCommand();
 	}
 
 	private Command conditionOperation(String condition, String name)
@@ -80,7 +92,7 @@ public class CommandFactory {
 	private Command queryByNameEqualOperation(String arg, String name)
 			throws ParseException {
 		String[] values = arg.split("=");
-		boolean isRightField = values[0].equals("daterange");
+		boolean isRightField = values[0].toLowerCase().equals("daterange");
 		if (isRightField) {
 			String[] conditions = values[1].split(",");
 			Date dateFrom = stringToDate(conditions[0]);
@@ -95,8 +107,8 @@ public class CommandFactory {
 			throws ParseException {
 		String[] values = arg.split(">");
 		String field = values[0];
-		boolean isRightField = field.equals("dateFrom")
-				|| field.equals("dateEnd");
+		boolean isRightField = field.toLowerCase().equals("datefrom")
+				|| field.toLowerCase().equals("dateend");
 		if (isRightField) {
 			String condition = values[1];
 			Date fieldValue = stringToDate(condition);
@@ -110,8 +122,8 @@ public class CommandFactory {
 			throws ParseException {
 		String[] values = arg.split("<");
 		String field = values[0];
-		boolean isRightField = field.equals("dateFrom")
-				|| field.equals("dateEnd");
+		boolean isRightField = field.toLowerCase().equals("datefrom")
+				|| field.toLowerCase().equals("dateend");
 		if (isRightField) {
 			String condition = values[1];
 			Date fieldValue = stringToDate(condition);
